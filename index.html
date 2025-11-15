@@ -3,285 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sessionify - Sign In</title>
+    <meta name="description" content="Sessionify brings client profiles, notes, sessions, and Google Meet workflows together in one secure workspace.">
+    <title>Sessionify | Streamline Client Management</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
+            margin: 0;
+        }
+
+        .btn {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 400px;
-            width: 100%;
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo h1 {
-            font-size: 32px;
-            color: #667eea;
-            font-weight: 700;
-        }
-
-        .logo p {
-            color: #666;
-            font-size: 14px;
-            margin-top: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e1e4e8;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
             font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 999px;
+            padding: 0.6rem 1.5rem;
+            text-decoration: none;
+            transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease, color 150ms ease;
         }
 
-        button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
         }
 
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+        .btn-primary {
+            background: linear-gradient(120deg, #6366f1 0%, #8b5cf6 100%);
+            color: #fff;
         }
 
-        .message {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
+        .btn-secondary {
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            color: inherit;
+            background-color: transparent;
         }
 
-        .message.error {
-            background-color: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
-            display: block;
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid transparent;
+            color: inherit;
         }
 
-        .message.success {
-            background-color: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
-            display: block;
+        .btn-lg {
+            padding: 0.85rem 2.5rem;
+            font-size: 1.05rem;
         }
 
-        .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
-            margin-left: 8px;
+        .card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 1rem;
+            box-shadow: 0 25px 45px rgba(15, 23, 42, 0.08);
+            padding: 1.5rem;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .dark .card {
+            background-color: rgba(15, 23, 42, 0.85);
+            color: #e2e8f0;
         }
 
-        .footer {
-            text-align: center;
-            margin-top: 24px;
-            color: #666;
-            font-size: 12px;
+        @keyframes pop {
+            0% { transform: scale(0.4); opacity: 0; }
+            60% { transform: scale(1.08); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="logo">
-            <h1>Sessionify</h1>
-            <p>Sign in to continue</p>
-        </div>
+<body class="antialiased bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-white transition-colors duration-300">
+    <div id="root"></div>
 
-        <div id="message" class="message"></div>
+    <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
 
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required autocomplete="email">
-            </div>
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useCallback, useContext, createContext } = React;
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password">
-            </div>
+        const logoColour = './assets/logo-colour.png';
+        const logoWhite = './assets/logo-white.png';
 
-            <button type="submit" id="submitBtn">
-                <span id="btnText">Sign In</span>
-                <span id="btnLoading" class="loading" style="display: none;"></span>
-            </button>
-        </form>
+        const ThemeContext = createContext({ theme: 'light', toggleTheme: () => {} });
+        const useTheme = () => useContext(ThemeContext);
 
-        <div class="footer">
-            © 2025 LunaFox Apps. All rights reserved.
-        </div>
-    </div>
+        const ThemeProvider = ({ children }) => {
+            const getInitialTheme = () => {
+                if (typeof window === 'undefined') return 'light';
+                const stored = window.localStorage.getItem('Sessionify-theme');
+                if (stored === 'light' || stored === 'dark') return stored;
+                return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            };
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const { createClient } = supabase;
-        const supabaseClient = createClient(
-            'https://lbkkgwmdauelpkkpruhp.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxia2tnd21kYXVlbHBra3BydWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE1MzIyODcsImV4cCI6MjA0NzEwODI4N30.kCLIHf1kvqbwVDvU6SmDRApVQS5sb9vdGzTAOHFVC3Q'
-        );
+            const [theme, setTheme] = useState(getInitialTheme);
 
-        const form = document.getElementById('loginForm');
-        const messageEl = document.getElementById('message');
-        const submitBtn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const btnLoading = document.getElementById('btnLoading');
+            useEffect(() => {
+                if (typeof window === 'undefined') return undefined;
+                window.localStorage.setItem('Sessionify-theme', theme);
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+                document.body.classList.toggle('dark', theme === 'dark');
+            }, [theme]);
 
-        function showMessage(text, type) {
-            messageEl.textContent = text;
-            messageEl.className = 'message ' + type;
-        }
-
-        function setLoading(loading) {
-            submitBtn.disabled = loading;
-            btnText.style.display = loading ? 'none' : 'inline';
-            btnLoading.style.display = loading ? 'inline-block' : 'none';
-        }
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            setLoading(true);
-            messageEl.className = 'message';
-
-            try {
-                // Authenticate with Supabase
-                const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (authError) throw authError;
-
-                // Fetch user record from your users table
-                const { data: userRecord, error: userError } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .eq('id', authData.user.id)
-                    .single();
-
-                if (userError) {
-                    console.error('User record error:', userError);
-                    throw new Error('User record not found. Please contact support.');
-                }
-
-                if (!userRecord) {
-                    throw new Error('User record not found. Please contact support.');
-                }
-
-                // Check if license has expired
-                const licenseExpiry = new Date(userRecord.license_expiry);
-                const now = new Date();
-                
-                if (licenseExpiry < now) {
-                    throw new Error('Your license has expired. Please renew your subscription.');
-                }
-
-                // Check if license is valid (not READONLY or has proper access)
-                if (userRecord.license === 'READONLY') {
-                    showMessage('Warning: You have read-only access.', 'error');
-                }
-
-                // Prepare user data to send to main app
-                const userData = {
-                    id: userRecord.id,
-                    email: userRecord.email || authData.user.email,
-                    name: userRecord.name,
-                    license_expiry: userRecord.license_expiry,
-                    license: userRecord.license,
-                    company: userRecord.company,
-                    company_logo: userRecord.company_logo,
-                    modules: userRecord.modules,
-                    stripe_customer_id: userRecord.stripe_customer_id,
-                    access_token: authData.session.access_token // Include access token for Edge Functions
+            useEffect(() => {
+                if (typeof window === 'undefined' || !window.matchMedia) return undefined;
+                const media = window.matchMedia('(prefers-color-scheme: dark)');
+                const listener = (event) => {
+                    const stored = window.localStorage.getItem('Sessionify-theme');
+                    if (!stored) {
+                        setTheme(event.matches ? 'dark' : 'light');
+                    }
                 };
+                media.addEventListener('change', listener);
+                return () => media.removeEventListener('change', listener);
+            }, []);
 
-                showMessage('Authentication successful! Closing window...', 'success');
-                
-                // Send message to parent window
-                if (window.opener && !window.opener.closed) {
-                    // Use wildcard for development, or specify parent origin
-                    window.opener.postMessage({
-                        type: 'NOTEHUB_AUTH_SUCCESS',
-                        data: userData
-                    }, '*');  // In production, replace with your actual domain
-                    
-                    setTimeout(() => {
-                        window.close();
-                    }, 1000);
-                } else {
-                    showMessage('Authentication successful! Please return to Notehub.', 'success');
-                }
-            } catch (error) {
-                console.error('Authentication error:', error);
-                showMessage(error.message || 'Authentication failed. Please check your credentials.', 'error');
-                setLoading(false);
-            }
-        });
+            const toggleTheme = useCallback(() => {
+                setTheme((curr) => (curr === 'dark' ? 'light' : 'dark'));
+            }, []);
+
+            const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
+
+            return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+        };
+
+        const ThemeToggle = () => {
+            const { theme, toggleTheme } = useTheme();
+            return (
+                <button type="button" className="btn btn-ghost hidden sm:inline-flex" onClick={toggleTheme} aria-label="Toggle theme">
+                    {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                </button>
+            );
+        };
+
+        const LandingPage = () => {
+            const { theme } = useTheme();
+
+            const features = useMemo(() => {
+                const items = [
+                    { icon: '🗂️', label: 'Client Profiles' },
+                    { icon: '📝', label: 'Session Notes' },
+                    { icon: '📅', label: 'Calendar' },
+                    { icon: '📂', label: 'Cloud Storage' },
+                    { icon: '💳', label: 'Payment Tracker' },
+                    { icon: '👥', label: 'Group Clients' },
+                    { icon: '⚡', label: 'Quick Actions' },
+                    { icon: '🔒', label: 'Privacy' },
+                    { icon: '📹', label: 'Google Meet' }
+                ];
+                return items.map((item, index) => ({
+                    ...item,
+                    left: `${10 + Math.random() * 75}%`,
+                    top: `${5 + Math.random() * 70}%`,
+                    delay: (index * 0.1 + Math.random() * 0.3).toFixed(2),
+                    floatDuration: (3 + Math.random() * 3).toFixed(2)
+                }));
+            }, []);
+
+            return (
+                <div className={`min-h-screen flex flex-col ${theme === 'dark' ? 'bg-slate-900 text-white' : 'bg-gray-50 text-gray-800'}`}>
+                    <header className="p-6 flex flex-wrap gap-4 justify-between items-center">
+                        <div className="flex items-center gap-3">
+                            <img src={theme === 'dark' ? logoWhite : logoColour} alt="Sessionify" className="h-9 w-auto" />
+                            <div>
+                                <p className="font-semibold leading-tight">Client Session Management</p>
+                                <p className="text-sm text-gray-400">Purpose-built for practitioners</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <ThemeToggle />
+                            <a href="/app/login/" className="btn btn-secondary">Log In</a>
+                            <a href="/app/login/?signup=1" className="btn btn-primary">Sign Up</a>
+                        </div>
+                    </header>
+
+                    <main className="flex-grow flex flex-col items-center justify-center text-center px-4">
+                        <section className="max-w-5xl w-full">
+                            <div className="relative my-8">
+                                <div className={`mx-auto w-full max-w-3xl h-64 md:h-80 rounded-2xl shadow-2xl overflow-hidden relative ${theme === 'dark' ? 'bg-slate-800' : 'bg-white'}`}>
+                                    <div className="absolute inset-0 p-6 flex flex-col md:flex-row gap-6">
+                                        <div className={`md:w-32 rounded-2xl p-4 ${theme === 'dark' ? 'bg-slate-700/80' : 'bg-indigo-50'}`}>
+                                            <div className="h-3 rounded bg-white/30 mb-2 w-3/4"></div>
+                                            <div className="h-2 rounded bg-white/20 mb-2 w-5/6"></div>
+                                            <div className="space-y-2 mt-3">
+                                                {[0, 1, 2].map((row) => (
+                                                    <div key={row} className="h-8 rounded bg-white/10"></div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3">
+                                            {[0, 1, 2, 3, 4, 5].map((col) => (
+                                                <div key={col} className={`rounded-xl p-3 flex flex-col justify-between ${theme === 'dark' ? 'bg-slate-700/60' : 'bg-gray-100'}`}>
+                                                    <div className="h-6 rounded bg-white/20 w-3/5 mb-3"></div>
+                                                    <div className="h-3 rounded bg-white/10 mb-2"></div>
+                                                    <div className="h-3 rounded bg-white/10 w-4/5"></div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {features.map((feature, index) => (
+                                    <div
+                                        key={`${feature.label}-${index}`}
+                                        className={`absolute inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm shadow-lg pointer-events-none ${theme === 'dark' ? 'bg-slate-700 text-white' : 'bg-white text-gray-800'}`}
+                                        style={{
+                                            left: feature.left,
+                                            top: feature.top,
+                                            animation: `pop 700ms ${feature.delay}s cubic-bezier(.2,.9,.3,1) both, float ${feature.floatDuration}s ${feature.delay}s ease-in-out infinite alternate`
+                                        }}
+                                    >
+                                        <span className="text-lg">{feature.icon}</span>
+                                        <span className="hidden sm:inline">{feature.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <h1 className="text-4xl md:text-5xl font-extrabold mb-4 mt-8 leading-tight">
+                                Streamline Your Client Management
+                            </h1>
+                            <p className="text-lg mb-8 max-w-2xl mx-auto text-gray-500 dark:text-gray-300">
+                                Sessionify is the all-in-one platform to manage your clients, sessions, payments, and notes with ease. Focus on what matters most — your clients.
+                            </p>
+                            <div className="flex flex-wrap justify-center gap-4">
+                                <a href="/app/login/?signup=1" className="btn btn-primary btn-lg">Get Started for Free</a>
+                                <a href="/app/login/" className="btn btn-secondary btn-lg">Launch the App</a>
+                            </div>
+                        </section>
+
+                        <section id="benefits" className="w-full max-w-6xl mx-auto mt-24 px-4">
+                            <h2 className="text-3xl font-bold text-center mb-12">Why Choose Sessionify?</h2>
+                            <div className="grid md:grid-cols-3 gap-8 text-left">
+                                <div className="card">
+                                    <div className="text-3xl mb-4">🗂️</div>
+                                    <h3 className="font-bold text-xl mb-2">Centralized Data</h3>
+                                    <p className="text-gray-500 dark:text-gray-300">All client information, session history, and notes live together. Never lose track of context.</p>
+                                </div>
+                                <div className="card">
+                                    <div className="text-3xl mb-4">⚡</div>
+                                    <h3 className="font-bold text-xl mb-2">Efficient Workflow</h3>
+                                    <p className="text-gray-500 dark:text-gray-300">A clean, intuitive workspace so you can create, update, and find what you need in seconds.</p>
+                                </div>
+                                <div className="card">
+                                    <div className="text-3xl mb-4">🔒</div>
+                                    <h3 className="font-bold text-xl mb-2">Secure & Private</h3>
+                                    <p className="text-gray-500 dark:text-gray-300">All of your client data is 100% local. We don't see a thing.</p>
+                                </div>
+                                <div className="card">
+                                    <div className="text-3xl mb-4">🧩</div>
+                                    <h3 className="font-bold text-xl mb-2">Integrations</h3>
+                                    <p className="text-gray-500 dark:text-gray-300">Connect your favorite tools and automate the busywork across your practice.</p>
+                                </div>
+                                <div className="card">
+                                    <div className="text-3xl mb-4">📹</div>
+                                    <h3 className="font-bold text-xl mb-2">Google Meet Ready</h3>
+                                    <p className="text-gray-500 dark:text-gray-300">Sync Meet links, recordings, and notes so every session stays organized.</p>
+                                </div>
+                                <div className="card">
+                                    <div className="text-3xl mb-4">💡</div>
+                                    <h3 className="font-bold text-xl mb-2">Community Driven</h3>
+                                    <p className="text-gray-500 dark:text-gray-300">We ship improvements based on practitioner feedback, so your workflow keeps improving.</p>
+                                </div>
+                            </div>
+                        </section>
+                    </main>
+
+                    <footer className="text-center p-6 text-sm text-gray-500">
+                        <p>&copy; {new Date().getFullYear()} Sessionify. All rights reserved.</p>
+                        <p><a className="underline" href="/app/login/">Log in to the workspace</a></p>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(
+            <ThemeProvider>
+                <LandingPage />
+            </ThemeProvider>
+        );
     </script>
 </body>
 </html>
-

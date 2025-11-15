@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessionify · Google Integration Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #0f172a;
+            background: #020617;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at top, rgba(79, 70, 229, 0.25), transparent 55%),
+                        linear-gradient(135deg, #020617, #0f172a 55%);
+            color: inherit;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            padding: 32px 16px 64px;
+        }
+
+        .shell {
+            width: min(960px, 100%);
+            background: rgba(2, 6, 23, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 28px;
+            padding: 32px clamp(16px, 4vw, 56px) 48px;
+            box-shadow: 0 40px 80px rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(18px);
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        header .brand {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        header img {
+            height: 42px;
+        }
+
+        header .brand h1 {
+            font-size: 1.35rem;
+            color: #f8fafc;
+            margin: 0;
+        }
+
+        header .brand span {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 20px;
+            padding: 24px;
+            color: #e2e8f0;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1.25rem;
+        }
+
+        .card p {
+            margin-top: 0;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            font-size: 0.73rem;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+        }
+
+        .status-chip.success { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .status-chip.danger { background: rgba(248,113,113,0.15); color: #fca5a5; }
+        .status-chip.info { background: rgba(59,130,246,0.2); color: #93c5fd; }
+
+        .btn {
+            border: none;
+            border-radius: 999px;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 120ms ease, box-shadow 120ms ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            color: white;
+            background: linear-gradient(120deg, #6366f1, #8b5cf6);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.15);
+            color: #e2e8f0;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: #cbd5f5;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            background: rgba(15, 23, 42, 0.6);
+            color: #f8fafc;
+            padding: 12px 14px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: 2px solid rgba(99, 102, 241, 0.8);
+            border-color: transparent;
+        }
+
+        .message {
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+        }
+
+        .message.success { background: rgba(34, 197, 94, 0.12); color: #bbf7d0; }
+        .message.error { background: rgba(248, 113, 113, 0.12); color: #fecdd3; }
+        .message.info { background: rgba(56,189,248,0.12); color: #bae6fd; }
+
+        ul.timeline {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .timeline li {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+        }
+
+        .timeline li:last-child { border-bottom: none; }
+
+        .timeline strong {
+            color: #f8fafc;
+        }
+
+        .hidden { display: none !important; }
+
+        footer {
+            margin-top: 48px;
+            text-align: center;
+            color: #475569;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <header>
+            <div class="brand">
+                <img src="../../assets/logo-white.png" alt="Sessionify logo" />
+                <div>
+                    <h1>Integrations</h1>
+                    <span>Google Workspace Integration Portal</span>
+                </div>
+            </div>
+            <button id="signOutBtn" class="btn btn-secondary hidden">Sign out</button>
+        </header>
+
+        <div id="alertBanner" class="message info hidden"></div>
+
+        <div class="card-grid">
+            <section id="loginCard" class="card">
+                <h2>1. Authenticate</h2>
+                <p>Sign in with the same email you use in the desktop Sessionify app. We'll use this secure session to link Google.</p>
+                <form id="loginForm" class="form" autocomplete="off">
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required autocomplete="email" />
+                    </div>
+                    <div class="input-group" style="margin-top: 12px;">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required autocomplete="current-password" />
+                    </div>
+                    <button class="btn btn-primary" type="submit" style="margin-top: 16px; width: 100%;" id="loginBtn">Sign in &amp; continue</button>
+                </form>
+                <div id="loginMessage" class="message hidden"></div>
+            </section>
+
+            <section id="linkCard" class="card hidden">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+                    <div>
+                        <h2>2. Link Google</h2>
+                        <p>Current user: <strong id="activeUser">&mdash;</strong></p>
+                    </div>
+                    <div id="statusChip" class="status-chip info">Checking...</div>
+                </div>
+                <div id="linkMessage" class="message info" style="margin-top:16px;">Use the button below to launch Google's consent screen.</div>
+                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;">
+                    <button id="launchOAuthBtn" class="btn btn-primary">Launch Google Authorization</button>
+                    <button id="refreshStatusBtn" class="btn btn-secondary">Refresh status</button>
+                </div>
+                <div style="margin-top:18px;font-size:0.9rem;color:#cbd5f5;" id="statusDetails">Awaiting status...</div>
+                <div style="margin-top:14px;font-size:0.85rem;color:#94a3b8;">If the consent window does not open, disable popup blockers for this domain.</div>
+            </section>
+        </div>
+
+        <section id="nextStepsCard" class="card hidden" style="margin-top:24px;">
+            <h2>Next steps</h2>
+            <p>Once linked, jump back into your desktop app and choose <strong>Settings → Refresh status</strong> to pull in the new tokens.</p>
+            <ul class="timeline" style="margin-top:10px;">
+                <li>
+                    <div>
+                        <strong>✅ Linked</strong>
+                        <div id="googleEmailLabel">Google account connected.</div>
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <strong>🔄 Refresh</strong>
+                        <div>Return to the Sessionify desktop app → Settings → "Refresh status".</div>
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <strong>📅 Verify</strong>
+                        <div>Create a test session with Google Meet to confirm everything synced.</div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <footer>
+            Need help? Email lunafoxapp@gmail.com &bull; &copy; <span id="year"></span> LunaFox Apps
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://lbkkgwmdauelpkkpruhp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxia2tnd21kYXVlbHBra3BydWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE1MzIyODcsImV4cCI6MjA0NzEwODI4N30.kCLIHf1kvqbwVDvU6SmDRApVQS5sb9vdGzTAOHFVC3Q';
+        const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/google-oauth`;
+
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const ui = {
+            loginCard: document.getElementById('loginCard'),
+            linkCard: document.getElementById('linkCard'),
+            nextStepsCard: document.getElementById('nextStepsCard'),
+            loginForm: document.getElementById('loginForm'),
+            loginMessage: document.getElementById('loginMessage'),
+            loginBtn: document.getElementById('loginBtn'),
+            statusChip: document.getElementById('statusChip'),
+            statusDetails: document.getElementById('statusDetails'),
+            linkMessage: document.getElementById('linkMessage'),
+            launchOAuthBtn: document.getElementById('launchOAuthBtn'),
+            refreshStatusBtn: document.getElementById('refreshStatusBtn'),
+            signOutBtn: document.getElementById('signOutBtn'),
+            activeUser: document.getElementById('activeUser'),
+            alertBanner: document.getElementById('alertBanner'),
+            googleEmailLabel: document.getElementById('googleEmailLabel')
+        };
+
+        const params = new URLSearchParams(window.location.search);
+        let pendingCode = params.get('code');
+        let pendingState = params.get('state');
+        let currentSession = null;
+
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        function showMessage(el, text, type = 'info') {
+            if (!el) return;
+            el.textContent = text;
+            el.className = `message ${type}`;
+            el.classList.remove('hidden');
+        }
+
+        function hideMessage(el) {
+            if (!el) return;
+            el.classList.add('hidden');
+        }
+
+        function toggleLoggedInUI(isLoggedIn, email = '') {
+            if (isLoggedIn) {
+                ui.loginCard.classList.add('hidden');
+                ui.linkCard.classList.remove('hidden');
+                ui.signOutBtn.classList.remove('hidden');
+                ui.activeUser.textContent = email;
+            } else {
+                ui.loginCard.classList.remove('hidden');
+                ui.linkCard.classList.add('hidden');
+                ui.nextStepsCard.classList.add('hidden');
+                ui.signOutBtn.classList.add('hidden');
+                ui.activeUser.textContent = '—';
+            }
+        }
+
+        async function syncSession() {
+            const { data } = await supabaseClient.auth.getSession();
+            currentSession = data?.session || null;
+            if (currentSession?.user) {
+                toggleLoggedInUI(true, currentSession.user.email || 'Unknown user');
+            } else {
+                toggleLoggedInUI(false);
+            }
+            return currentSession;
+        }
+
+        async function fetchGoogleStatus() {
+            if (!currentSession) return;
+            ui.statusChip.textContent = 'Checking...';
+            ui.statusChip.className = 'status-chip info';
+            ui.statusDetails.textContent = 'Contacting secure Edge Function...';
+            try {
+                const response = await fetch(EDGE_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentSession.access_token}`,
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({ action: 'get-status' })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data?.error || 'Failed to read status');
+
+                ui.statusChip.textContent = data.connected ? 'Connected' : 'Not linked';
+                ui.statusChip.className = `status-chip ${data.connected ? 'success' : 'danger'}`;
+                ui.statusDetails.textContent = data.connected
+                    ? `Google account linked${data.email ? ` as ${data.email}` : ''}.`
+                    : 'No Google account linked yet.';
+
+                if (data.connected && data.email) {
+                    ui.googleEmailLabel.textContent = `Google account: ${data.email}`;
+                    ui.nextStepsCard.classList.remove('hidden');
+                }
+
+                return data.connected;
+            } catch (err) {
+                console.error('Status error:', err);
+                ui.statusChip.textContent = 'Error';
+                ui.statusChip.className = 'status-chip danger';
+                ui.statusDetails.textContent = 'Unable to verify Google status. Try refreshing.';
+                return false;
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            hideMessage(ui.loginMessage);
+            ui.loginBtn.disabled = true;
+            ui.loginBtn.textContent = 'Signing in...';
+            try {
+                const email = event.target.email.value.trim();
+                const password = event.target.password.value.trim();
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                await syncSession();
+                showMessage(ui.loginMessage, 'Authenticated successfully. Proceed below.', 'success');
+                await fetchGoogleStatus();
+                if (pendingCode) {
+                    await exchangeCode(pendingCode);
+                }
+            } catch (err) {
+                console.error('Login failed:', err);
+                showMessage(ui.loginMessage, err?.message || 'Authentication failed', 'error');
+            } finally {
+                ui.loginBtn.disabled = false;
+                ui.loginBtn.textContent = 'Sign in & continue';
+            }
+        }
+
+        async function startGoogleOAuth() {
+            if (!currentSession) {
+                showMessage(ui.linkMessage, 'Sign in first to continue.', 'error');
+                return;
+            }
+            ui.launchOAuthBtn.disabled = true;
+            ui.launchOAuthBtn.textContent = 'Opening Google...';
+            showMessage(ui.linkMessage, 'Opening Google authorization window...', 'info');
+            try {
+                const returnUrl = window.location.origin + window.location.pathname;
+                const response = await fetch(EDGE_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentSession.access_token}`,
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({ action: 'get-auth-url', mode: 'web', returnUrl })
+                });
+                const data = await response.json();
+                if (!response.ok || !data?.authUrl) {
+                    throw new Error(data?.error || 'Failed to create Google link.');
+                }
+                window.location.href = data.authUrl;
+            } catch (err) {
+                console.error('OAuth start failed:', err);
+                showMessage(ui.linkMessage, err?.message || 'Unable to open Google authorization.', 'error');
+                ui.launchOAuthBtn.disabled = false;
+                ui.launchOAuthBtn.textContent = 'Launch Google Authorization';
+            }
+        }
+
+        async function exchangeCode(code) {
+            if (!currentSession) {
+                showMessage(ui.linkMessage, 'Please sign in again to finish linking.', 'error');
+                return;
+            }
+            showMessage(ui.linkMessage, 'Finishing Google authorization...', 'info');
+            ui.launchOAuthBtn.disabled = true;
+            ui.launchOAuthBtn.textContent = 'Completing...';
+            try {
+                const response = await fetch(EDGE_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentSession.access_token}`,
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({ action: 'exchange-code', code })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data?.error || 'Failed to exchange code');
+
+                showMessage(ui.linkMessage, 'Google account linked successfully! Return to the desktop app and refresh status.', 'success');
+                ui.googleEmailLabel.textContent = data?.email ? `Google account: ${data.email}` : 'Google account linked.';
+                ui.nextStepsCard.classList.remove('hidden');
+                await fetchGoogleStatus();
+            } catch (err) {
+                console.error('Exchange failed:', err);
+                showMessage(ui.linkMessage, err?.message || 'Unable to finish linking.', 'error');
+            } finally {
+                pendingCode = null;
+                pendingState = null;
+                ui.launchOAuthBtn.disabled = false;
+                ui.launchOAuthBtn.textContent = 'Launch Google Authorization';
+                removeQueryParams();
+            }
+        }
+
+        function removeQueryParams() {
+            if (window.history.replaceState) {
+                const cleanUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+        }
+
+        async function handleSignOut() {
+            await supabaseClient.auth.signOut();
+            pendingCode = null;
+            removeQueryParams();
+            toggleLoggedInUI(false);
+            showMessage(ui.alertBanner, 'Signed out. Sign back in to continue.', 'info');
+            setTimeout(() => ui.alertBanner.classList.add('hidden'), 4000);
+        }
+
+        ui.loginForm.addEventListener('submit', handleLogin);
+        ui.launchOAuthBtn.addEventListener('click', startGoogleOAuth);
+        ui.refreshStatusBtn.addEventListener('click', () => fetchGoogleStatus());
+        ui.signOutBtn.addEventListener('click', handleSignOut);
+
+        (async function init() {
+            await syncSession();
+            if (currentSession) {
+                await fetchGoogleStatus();
+                if (pendingCode) {
+                    await exchangeCode(pendingCode);
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
