@@ -372,12 +372,13 @@
                 <p class="muted">Need help?</p>
                 <div class="link-strip">
                     <a href="mailto:lunafoxapp@gmail.com?subject=Account%20Help">lunafoxapp@gmail.com</a>
-                    <a href="https://sessionify.onrender.com/" target="_blank" rel="noreferrer">Visit Website</a>
+                    <a href="https://sessionify.onrender.com/" rel="noreferrer">Visit Website</a>
                 </div>
             </div>
         </aside>
         <main class="content">
             <div class="top-bar float-end">
+                <button id="backToDashboardBtn" onclick="() => window.location.href = '/app/account'">Back to dashboard</button>
                 <button id="signOutBtn" class="danger hidden">Sign out</button>
             </div>
 
@@ -415,6 +416,12 @@
                     <p id="statusDetails" style="margin-top:18px;">Awaiting status...</p>
                     <p class="muted" style="margin-top:8px;">If the consent window does not open, temporarily disable popup blockers for this page.</p>
                 </section>
+
+                <section id="nextStepsCard" class="card hidden">
+                    <h3>Next Steps</h3>
+                    <p id="googleEmailLabel"></p>
+                    <p>You're all set! Return to the Sessionify desktop app and refresh your status to start syncing.</p>
+                </section>
             </div>
         </main>
     </div>
@@ -441,6 +448,7 @@
             launchOAuthBtn: document.getElementById('launchOAuthBtn'),
             refreshStatusBtn: document.getElementById('refreshStatusBtn'),
             signOutBtn: document.getElementById('signOutBtn'),
+            backToDashboardBtn: document.getElementById('backToDashboardBtn'),
             activeUser: document.getElementById('activeUser'),
             alertBanner: document.getElementById('alertBanner'),
             googleEmailLabel: document.getElementById('googleEmailLabel')

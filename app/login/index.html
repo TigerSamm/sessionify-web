@@ -13,8 +13,9 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top left, #4c1d95 0%, #111827 45%, #0f172a 100%);
+            color: #f1f5f9;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -161,8 +162,8 @@
 <body>
     <div class="container">
         <div class="logo">
-            <h1>Sessionify</h1>
-            <p>Sign in to continue</p>
+            <h1><img src="../../assets/logo-colour.png" alt="Sessionify Logo" width="50%" /></h1>
+            <p id="subheading">Sign in to continue</p>
         </div>
 
         <div id="message" class="message"></div>
@@ -176,6 +177,11 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required autocomplete="current-password">
+            </div>
+
+            <div class="form-group" style="display:flex;align-items:center;gap:8px;margin-top:-8px;">
+                <input type="checkbox" id="rememberMe" style="width:auto;" />
+                <label for="rememberMe" style="margin:0;font-weight:400;color:#444;">Remember my email on this device</label>
             </div>
 
             <button type="submit" id="submitBtn">
@@ -197,11 +203,26 @@
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxia2tnd21kYXVlbHBra3BydWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE1MzIyODcsImV4cCI6MjA0NzEwODI4N30.kCLIHf1kvqbwVDvU6SmDRApVQS5sb9vdGzTAOHFVC3Q'
         );
 
+        const ACCOUNT_PORTAL_URL = '../account/';
+        const REMEMBER_ME_KEY = 'sessionifyRememberMeEmail';
+
         const form = document.getElementById('loginForm');
         const messageEl = document.getElementById('message');
         const submitBtn = document.getElementById('submitBtn');
         const btnText = document.getElementById('btnText');
         const btnLoading = document.getElementById('btnLoading');
+        const rememberMeCheckbox = document.getElementById('rememberMe');
+        const emailInput = document.getElementById('email');
+        const subheading = document.getElementById('subheading');
+
+        const launchedByDesktop = Boolean(window.opener && !window.opener.closed);
+        subheading.textContent = launchedByDesktop ? 'Sign in to continue to the Sessionify app' : 'Sign in to continue to the Account Center';
+
+        const storedEmail = localStorage.getItem(REMEMBER_ME_KEY);
+        if (storedEmail) {
+            emailInput.value = storedEmail;
+            rememberMeCheckbox.checked = true;
+        }
 
         function showMessage(text, type) {
             messageEl.textContent = text;
@@ -270,19 +291,28 @@
                     access_token: authData.session.access_token
                 };
 
-                showMessage('Authentication successful! Closing window...', 'success');
-                
+                showMessage('Authentication successful!', 'success');
+
                 if (window.opener && !window.opener.closed) {
                     window.opener.postMessage({
                         type: 'NOTEHUB_AUTH_SUCCESS',
                         data: userData
                     }, '*');
-                    
+
                     setTimeout(() => {
                         window.close();
                     }, 1000);
                 } else {
-                    showMessage('Authentication successful! Please return to Notehub.', 'success');
+                    showMessage('Authentication successful! Opening the Sessionify account center...', 'success');
+                    setTimeout(() => {
+                        window.location.href = ACCOUNT_PORTAL_URL;
+                    }, 800);
+                }
+
+                if (rememberMeCheckbox.checked) {
+                    localStorage.setItem(REMEMBER_ME_KEY, email);
+                } else {
+                    localStorage.removeItem(REMEMBER_ME_KEY);
                 }
             } catch (error) {
                 console.error('Authentication error:', error);
