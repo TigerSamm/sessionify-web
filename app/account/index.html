@@ -481,6 +481,7 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxia2tnd21kYXVlbHBra3BydWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE1MzIyODcsImV4cCI6MjA0NzEwODI4N30.kCLIHf1kvqbwVDvU6SmDRApVQS5sb9vdGzTAOHFVC3Q';
 
         const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const AUTH_SESSION_KEY = 'sessionifyAuthSession';
 
         const els = {
             banner: document.getElementById('banner'),
@@ -518,6 +519,60 @@
         };
 
         let currentUserId = null;
+        let currentSession = null;
+
+        const persistPortalSession = (session) => {
+            if (!session || typeof window === 'undefined') return;
+            try {
+                const payload = {
+                    access_token: session.access_token,
+                    refresh_token: session.refresh_token,
+                    expires_at: session.expires_at
+                };
+                window.localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(payload));
+            } catch (err) {
+                console.warn('Unable to persist portal session', err);
+            }
+        };
+
+        const clearPersistedPortalSession = () => {
+            if (typeof window === 'undefined') return;
+            window.localStorage.removeItem(AUTH_SESSION_KEY);
+        };
+
+        const hydratePortalSessionFromStorage = async () => {
+            if (typeof window === 'undefined') return null;
+            const raw = window.localStorage.getItem(AUTH_SESSION_KEY);
+            if (!raw) return null;
+            try {
+                const saved = JSON.parse(raw);
+                if (!saved?.access_token || !saved?.refresh_token) {
+                    clearPersistedPortalSession();
+                    return null;
+                }
+                const { data, error } = await client.auth.setSession({
+                    access_token: saved.access_token,
+                    refresh_token: saved.refresh_token
+                });
+                if (error) throw error;
+                if (data?.session) persistPortalSession(data.session);
+                return data?.session || null;
+            } catch (err) {
+                console.warn('Failed to hydrate portal session', err);
+                clearPersistedPortalSession();
+                return null;
+            }
+        };
+
+        client.auth.onAuthStateChange((_event, session) => {
+            currentSession = session;
+            if (session) {
+                persistPortalSession(session);
+            } else {
+                clearPersistedPortalSession();
+                currentUserId = null;
+            }
+        });
 
         const showBanner = (text, type = 'success') => {
             els.banner.textContent = text;
@@ -663,6 +718,8 @@
                 const password = document.getElementById('loginPassword').value.trim();
                 const { data: authData, error } = await client.auth.signInWithPassword({ email, password });
                 if (error) throw error;
+                currentSession = authData.session;
+                persistPortalSession(authData.session);
                 currentUserId = authData.user.id;
                 await fetchProfile();
                 els.loginGate.classList.add('hidden');
@@ -703,7 +760,9 @@
 
         els.logoutBtn.addEventListener('click', async () => {
             await client.auth.signOut();
+            clearPersistedPortalSession();
             currentUserId = null;
+            currentSession = null;
             els.accountPanel.classList.add('hidden');
             els.loginGate.classList.remove('hidden');
             showBanner('Signed out.', 'success');
@@ -743,6 +802,26 @@
         els.makeDocsBtn?.addEventListener('click', () => {
             window.open('https://sessionify.app/integrations/make', '_blank', 'noopener');
         });
+
+        (async function bootstrapPortalSession() {
+            const restored = await hydratePortalSessionFromStorage();
+            if (restored?.user) {
+                currentSession = restored;
+                currentUserId = restored.user.id;
+                els.loginGate.classList.add('hidden');
+                els.accountPanel.classList.remove('hidden');
+                showBanner('Session restored. Loading your account...', 'success');
+                try {
+                    await fetchProfile();
+                    showBanner('Account data refreshed.', 'success');
+                } catch (err) {
+                    console.error(err);
+                    showBanner('Unable to refresh account automatically. Please sign in again.', 'error');
+                    els.accountPanel.classList.add('hidden');
+                    els.loginGate.classList.remove('hidden');
+                }
+            }
+        })();
     </script>
 </body>
 </html>

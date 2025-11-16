@@ -205,6 +205,7 @@
 
         const ACCOUNT_PORTAL_URL = '../account/';
         const REMEMBER_ME_KEY = 'sessionifyRememberMeEmail';
+        const AUTH_SESSION_KEY = 'sessionifyAuthSession';
 
         const form = document.getElementById('loginForm');
         const messageEl = document.getElementById('message');
@@ -217,6 +218,57 @@
 
         const launchedByDesktop = Boolean(window.opener && !window.opener.closed);
         subheading.textContent = launchedByDesktop ? 'Sign in to continue to the Sessionify app' : 'Sign in to continue to the Account Center';
+
+        const persistAuthSession = (session) => {
+            if (!session || typeof window === 'undefined') return;
+            try {
+                const payload = {
+                    access_token: session.access_token,
+                    refresh_token: session.refresh_token,
+                    expires_at: session.expires_at
+                };
+                window.localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(payload));
+            } catch (err) {
+                console.warn('Unable to persist session', err);
+            }
+        };
+
+        const clearPersistedAuthSession = () => {
+            if (typeof window === 'undefined') return;
+            window.localStorage.removeItem(AUTH_SESSION_KEY);
+        };
+
+        const hydrateAuthSessionFromStorage = async () => {
+            if (typeof window === 'undefined') return null;
+            const raw = window.localStorage.getItem(AUTH_SESSION_KEY);
+            if (!raw) return null;
+            try {
+                const saved = JSON.parse(raw);
+                if (!saved?.access_token || !saved?.refresh_token) {
+                    clearPersistedAuthSession();
+                    return null;
+                }
+                const { data, error } = await supabaseClient.auth.setSession({
+                    access_token: saved.access_token,
+                    refresh_token: saved.refresh_token
+                });
+                if (error) throw error;
+                if (data?.session) persistAuthSession(data.session);
+                return data?.session || null;
+            } catch (err) {
+                console.warn('Failed to hydrate session from storage', err);
+                clearPersistedAuthSession();
+                return null;
+            }
+        };
+
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+            if (session) {
+                persistAuthSession(session);
+            } else {
+                clearPersistedAuthSession();
+            }
+        });
 
         const storedEmail = localStorage.getItem(REMEMBER_ME_KEY);
         if (storedEmail) {
@@ -251,6 +303,7 @@
                 });
 
                 if (authError) throw authError;
+                persistAuthSession(authData.session);
 
                 const { data: userRecord, error: userError } = await supabaseClient
                     .from('users')
@@ -298,7 +351,6 @@
                         type: 'NOTEHUB_AUTH_SUCCESS',
                         data: userData
                     }, '*');
-
                     setTimeout(() => {
                         window.close();
                     }, 1000);
@@ -316,6 +368,9 @@
                 }
             } catch (error) {
                 console.error('Authentication error:', error);
+            (async function bootstrapSessionPersistence() {
+                await hydrateAuthSessionFromStorage();
+            })();
                 showMessage(error.message || 'Authentication failed. Please check your credentials.', 'error');
                 setLoading(false);
             }

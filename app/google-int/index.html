@@ -378,7 +378,7 @@
         </aside>
         <main class="content">
             <div class="top-bar float-end">
-                <button id="backToDashboardBtn" onclick="() => window.location.href = '/app/account'">Back to dashboard</button>
+                <button onclick="window.location.href = '/app/account'" class="button">Back to dashboard</button>
                 <button id="signOutBtn" class="danger hidden">Sign out</button>
             </div>
 
@@ -434,6 +434,7 @@
 
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const AUTH_SESSION_KEY = 'sessionifyAuthSession';
 
         const ui = {
             loginCard: document.getElementById('loginCard'),
@@ -457,6 +458,58 @@
         const params = new URLSearchParams(window.location.search);
         let pendingCode = params.get('code');
         let currentSession = null;
+
+        const persistPortalSession = (session) => {
+            if (!session || typeof window === 'undefined') return;
+            try {
+                const payload = {
+                    access_token: session.access_token,
+                    refresh_token: session.refresh_token,
+                    expires_at: session.expires_at
+                };
+                window.localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(payload));
+            } catch (err) {
+                console.warn('Unable to persist session', err);
+            }
+        };
+
+        const clearPersistedPortalSession = () => {
+            if (typeof window === 'undefined') return;
+            window.localStorage.removeItem(AUTH_SESSION_KEY);
+        };
+
+        const hydratePortalSessionFromStorage = async () => {
+            if (typeof window === 'undefined') return null;
+            const raw = window.localStorage.getItem(AUTH_SESSION_KEY);
+            if (!raw) return null;
+            try {
+                const saved = JSON.parse(raw);
+                if (!saved?.access_token || !saved?.refresh_token) {
+                    clearPersistedPortalSession();
+                    return null;
+                }
+                const { data, error } = await supabaseClient.auth.setSession({
+                    access_token: saved.access_token,
+                    refresh_token: saved.refresh_token
+                });
+                if (error) throw error;
+                if (data?.session) persistPortalSession(data.session);
+                return data?.session || null;
+            } catch (err) {
+                console.warn('Failed to hydrate session', err);
+                clearPersistedPortalSession();
+                return null;
+            }
+        };
+
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+            currentSession = session;
+            if (session) {
+                persistPortalSession(session);
+            } else {
+                clearPersistedPortalSession();
+            }
+        });
 
         function showMessage(el, text, type = 'info') {
             if (!el) return;
@@ -488,6 +541,9 @@
         async function syncSession() {
             const { data } = await supabaseClient.auth.getSession();
             currentSession = data?.session || null;
+            if (!currentSession) {
+                currentSession = await hydratePortalSessionFromStorage();
+            }
             if (currentSession?.user) {
                 toggleLoggedInUI(true, currentSession.user.email || 'Unknown user');
             } else {
@@ -547,6 +603,7 @@
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) throw error;
                 currentSession = data.session;
+                persistPortalSession(data.session);
                 toggleLoggedInUI(true, email);
                 showMessage(ui.loginMessage, 'Authenticated. You can proceed to link Google.', 'success');
                 await fetchGoogleStatus();
@@ -639,7 +696,9 @@
 
         async function handleSignOut() {
             await supabaseClient.auth.signOut();
+            clearPersistedPortalSession();
             pendingCode = null;
+            currentSession = null;
             removeQueryParams();
             toggleLoggedInUI(false);
             showMessage(ui.alertBanner, 'Signed out. Sign back in to continue.', 'info');
