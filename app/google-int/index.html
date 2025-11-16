@@ -1,296 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sessionify · Google Integration Portal</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="../../assets/favicon.png" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Sessionify · Google Integration</title>
     <style>
-        :root {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            color: #0f172a;
-            background: #020617;
+        * {
+            box-sizing: border-box;
         }
 
         body {
             margin: 0;
             min-height: 100vh;
-            background: radial-gradient(circle at top, rgba(79, 70, 229, 0.25), transparent 55%),
-                        linear-gradient(135deg, #020617, #0f172a 55%);
-            color: inherit;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top left, #4c1d95 0%, #111827 45%, #0f172a 100%);
+            color: #f1f5f9;
             display: flex;
             align-items: stretch;
             justify-content: center;
-            padding: 32px 16px 64px;
+            padding: 32px;
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                padding: 16px;
+            }
         }
 
         .shell {
-            width: min(960px, 100%);
-            background: rgba(2, 6, 23, 0.75);
-            border: 1px solid rgba(148, 163, 184, 0.15);
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(15, 23, 42, 0.72);
             border-radius: 28px;
-            padding: 32px clamp(16px, 4vw, 56px) 48px;
-            box-shadow: 0 40px 80px rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(18px);
-        }
-
-        header {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-        }
-
-        header .brand {
-            display: flex;
-            gap: 14px;
-            align-items: center;
-        }
-
-        header img {
-            height: 42px;
-        }
-
-        header .brand h1 {
-            font-size: 1.35rem;
-            color: #f8fafc;
-            margin: 0;
-        }
-
-        header .brand span {
-            color: #94a3b8;
-            font-size: 0.875rem;
-        }
-
-        .card-grid {
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: 320px 1fr;
+            overflow: hidden;
+            box-shadow: 0 35px 120px rgba(15, 23, 42, 0.45);
+        }
+
+        @media (max-width: 900px) {
+            .shell {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            background: linear-gradient(165deg, rgba(99, 102, 241, 0.4) 0%, rgba(76, 29, 149, 0.9) 100%);
+            padding: 40px 32px;
+            display: flex;
+            flex-direction: column;
             gap: 24px;
         }
 
+        .sidebar h1 {
+            font-size: 32px;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .sidebar p {
+            color: rgba(241, 245, 249, 0.85);
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .sidebar .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            width: fit-content;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .content {
+                padding: 24px;
+            }
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .user-chip span {
+            font-size: 14px;
+            color: #cbd5f5;
+        }
+
+        button,
+        .btn-link {
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+            font-family: inherit;
+        }
+
+        button.primary {
+            background: linear-gradient(120deg, #818cf8, #a78bfa);
+            color: #0f172a;
+        }
+
+        button.secondary,
+        .btn-link.secondary {
+            background: rgba(148, 163, 184, 0.08);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        button.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fecaca;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        button:not(:disabled):hover,
+        .btn-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 25px rgba(15, 23, 42, 0.25);
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        @media (min-width: 900px) {
+            .grid.two {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
         .card {
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.75);
             border: 1px solid rgba(148, 163, 184, 0.15);
             border-radius: 20px;
             padding: 24px;
-            color: #e2e8f0;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
         }
 
-        .card h2 {
+        .card h3 {
             margin-top: 0;
-            margin-bottom: 8px;
-            font-size: 1.25rem;
+            margin-bottom: 12px;
+            font-size: 20px;
         }
 
         .card p {
-            margin-top: 0;
-            color: #94a3b8;
-            font-size: 0.95rem;
+            margin: 0 0 12px;
+            color: #cbd5f5;
+            font-size: 14px;
+        }
+
+        .integration-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .integration-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            padding: 14px 0;
+            border-top: 1px solid rgba(148, 163, 184, 0.15);
+        }
+
+        .integration-row:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .integration-meta strong {
+            font-size: 16px;
+        }
+
+        .integration-meta span {
+            display: block;
+            font-size: 13px;
+            color: rgba(226, 232, 240, 0.7);
         }
 
         .status-chip {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 4px 12px;
+            gap: 6px;
             border-radius: 999px;
-            text-transform: uppercase;
-            font-size: 0.73rem;
-            letter-spacing: 0.08em;
-            font-weight: 600;
+            padding: 6px 14px;
+            font-size: 13px;
+            border: 1px solid rgba(148, 163, 184, 0.25);
         }
 
-        .status-chip.success { background: rgba(34,197,94,0.15); color: #4ade80; }
-        .status-chip.danger { background: rgba(248,113,113,0.15); color: #fca5a5; }
-        .status-chip.info { background: rgba(59,130,246,0.2); color: #93c5fd; }
+        .status-chip.connected {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: rgba(34, 197, 94, 0.4);
+            color: #bbf7d0;
+        }
 
-        .btn {
-            border: none;
-            border-radius: 999px;
-            padding: 12px 20px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 120ms ease, box-shadow 120ms ease;
+        .status-chip.pending {
+            background: rgba(234, 179, 8, 0.15);
+            border-color: rgba(234, 179, 8, 0.4);
+            color: #fde68a;
+        }
+
+        .status-chip.disconnected {
+            background: rgba(248, 113, 113, 0.12);
+            border-color: rgba(248, 113, 113, 0.4);
+            color: #fecaca;
+        }
+
+        .plan-pill {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.15);
+            color: #e0e7ff;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
 
-        .btn:disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-        }
-
-        .btn-primary {
-            color: white;
-            background: linear-gradient(120deg, #6366f1, #8b5cf6);
-            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.2);
-        }
-
-        .btn-secondary {
-            background: rgba(148, 163, 184, 0.15);
-            color: #e2e8f0;
-        }
-
-        .input-group {
+        .status {
             display: flex;
-            flex-direction: column;
-            gap: 6px;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            margin-bottom: 12px;
         }
 
-        label {
-            font-size: 0.85rem;
-            color: #cbd5f5;
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: #34d399;
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
         }
 
-        input[type="email"],
-        input[type="password"] {
+        .status.expired .status-dot {
+            background: #f87171;
+            box-shadow: 0 0 10px rgba(248, 113, 113, 0.6);
+        }
+
+        .muted {
+            color: rgba(226, 232, 240, 0.65);
+            font-size: 13px;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        form input,
+        form select {
+            width: 100%;
+            padding: 12px 14px;
             border-radius: 12px;
-            border: 1px solid rgba(148, 163, 184, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.4);
             background: rgba(15, 23, 42, 0.6);
             color: #f8fafc;
-            padding: 12px 14px;
-            font-size: 1rem;
+            font-size: 15px;
+            transition: border 150ms ease, box-shadow 150ms ease;
         }
 
-        input:focus {
-            outline: 2px solid rgba(99, 102, 241, 0.8);
-            border-color: transparent;
+        form input:focus,
+        form select:focus {
+            outline: none;
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
         }
 
         .message {
-            margin-top: 16px;
-            padding: 14px 16px;
             border-radius: 16px;
-            font-size: 0.95rem;
+            padding: 14px 18px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
         }
 
-        .message.success { background: rgba(34, 197, 94, 0.12); color: #bbf7d0; }
-        .message.error { background: rgba(248, 113, 113, 0.12); color: #fecdd3; }
-        .message.info { background: rgba(56,189,248,0.12); color: #bae6fd; }
+        .message.show { display: block; }
+        .message.error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fecaca; }
+        .message.success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #d1fae5; }
 
-        ul.timeline {
-            list-style: none;
-            padding-left: 0;
-            margin: 0;
-        }
-
-        .timeline li {
+        .login-panel {
             display: flex;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.15);
-        }
-
-        .timeline li:last-child { border-bottom: none; }
-
-        .timeline strong {
-            color: #f8fafc;
+            flex-direction: column;
+            gap: 18px;
         }
 
         .hidden { display: none !important; }
 
-        footer {
-            margin-top: 48px;
-            text-align: center;
-            color: #475569;
-            font-size: 0.85rem;
+        .flex-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        @media (max-width: 600px) {
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        .tag {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            background: rgba(148, 163, 184, 0.15);
+            color: #c7d2fe;
         }
+
+        .link-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .link-strip a {
+            color: #c4b5fd;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .link-strip a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <div class="shell">
-        <header>
-            <div class="brand">
-                <img src="../../assets/logo-white.png" alt="Sessionify logo" />
-                <div>
-                    <h1>Integrations</h1>
-                    <span>Google Workspace Integration Portal</span>
+        <aside class="sidebar">
+            <div class="pill">Sessionify Portal</div>
+            <h1>Connect Google Workspace in two quick steps.</h1>
+            <p>Authenticate with your Sessionify credentials, launch the Google consent screen, and you'll be ready to sync Meet links, calendar slots, and contacts.</p>
+            <div>
+                <p class="muted">Need help?</p>
+                <div class="link-strip">
+                    <a href="mailto:lunafoxapp@gmail.com?subject=Account%20Help">lunafoxapp@gmail.com</a>
+                    <a href="https://sessionify.onrender.com/" target="_blank" rel="noreferrer">Visit Website</a>
                 </div>
             </div>
-            <button id="signOutBtn" class="btn btn-secondary hidden">Sign out</button>
-        </header>
+        </aside>
+        <main class="content">
+            <div class="top-bar float-end">
+                <button id="signOutBtn" class="danger hidden">Sign out</button>
+            </div>
 
-        <div id="alertBanner" class="message info hidden"></div>
+            <div id="alertBanner" class="message info hidden"></div>
 
-        <div class="card-grid">
-            <section id="loginCard" class="card">
-                <h2>1. Authenticate</h2>
-                <p>Sign in with the same email you use in the desktop Sessionify app. We'll use this secure session to link Google.</p>
-                <form id="loginForm" class="form" autocomplete="off">
-                    <div class="input-group">
-                        <label for="email">Email</label>
+            <div class="grid two">
+                <section id="loginCard" class="card">
+                    <h2>Step 1 &middot; Authenticate</h2>
+                    <p>Sign in with the same email and password you use inside the Sessionify desktop app.</p>
+                    <form id="loginForm" autocomplete="off">
+                        <label for="email">Email address</label>
                         <input type="email" id="email" name="email" required autocomplete="email" />
-                    </div>
-                    <div class="input-group" style="margin-top: 12px;">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required autocomplete="current-password" />
-                    </div>
-                    <button class="btn btn-primary" type="submit" style="margin-top: 16px; width: 100%;" id="loginBtn">Sign in &amp; continue</button>
-                </form>
-                <div id="loginMessage" class="message hidden"></div>
-            </section>
+                        <div style="margin-top:16px;">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required autocomplete="current-password" />
+                        </div>
+                        <button class="primary" type="submit" style="margin-top:18px; width:100%;" id="loginBtn">Sign in &amp; continue</button>
+                    </form>
+                    <div id="loginMessage" class="message hidden"></div>
+                </section>
 
-            <section id="linkCard" class="card hidden">
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
-                    <div>
-                        <h2>2. Link Google</h2>
-                        <p>Current user: <strong id="activeUser">&mdash;</strong></p>
+                <section id="linkCard" class="card hidden">
+                    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;">
+                        <div>
+                            <h2>Step 2 &middot; Link Google</h2>
+                            <p>Current user: <strong id="activeUser">&mdash;</strong></p>
+                        </div>
+                        <div id="statusChip" class="status-chip info">Checking...</div>
                     </div>
-                    <div id="statusChip" class="status-chip info">Checking...</div>
-                </div>
-                <div id="linkMessage" class="message info" style="margin-top:16px;">Use the button below to launch Google's consent screen.</div>
-                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;">
-                    <button id="launchOAuthBtn" class="btn btn-primary">Launch Google Authorization</button>
-                    <button id="refreshStatusBtn" class="btn btn-secondary">Refresh status</button>
-                </div>
-                <div style="margin-top:18px;font-size:0.9rem;color:#cbd5f5;" id="statusDetails">Awaiting status...</div>
-                <div style="margin-top:14px;font-size:0.85rem;color:#94a3b8;">If the consent window does not open, disable popup blockers for this domain.</div>
-            </section>
-        </div>
-
-        <section id="nextStepsCard" class="card hidden" style="margin-top:24px;">
-            <h2>Next steps</h2>
-            <p>Once linked, jump back into your desktop app and choose <strong>Settings → Refresh status</strong> to pull in the new tokens.</p>
-            <ul class="timeline" style="margin-top:10px;">
-                <li>
-                    <div>
-                        <strong>✅ Linked</strong>
-                        <div id="googleEmailLabel">Google account connected.</div>
+                    <div id="linkMessage" class="message info" style="margin-top:16px;">Use the button below to launch Google's consent screen.</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;">
+                        <button id="launchOAuthBtn" class="primary">Launch Google authorization</button>
+                        <button id="refreshStatusBtn" class="secondary">Refresh status</button>
                     </div>
-                </li>
-                <li>
-                    <div>
-                        <strong>🔄 Refresh</strong>
-                        <div>Return to the Sessionify desktop app → Settings → "Refresh status".</div>
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <strong>📅 Verify</strong>
-                        <div>Create a test session with Google Meet to confirm everything synced.</div>
-                    </div>
-                </li>
-            </ul>
-        </section>
-
-        <footer>
-            Need help? Email lunafoxapp@gmail.com &bull; &copy; <span id="year"></span> LunaFox Apps
-        </footer>
+                    <p id="statusDetails" style="margin-top:18px;">Awaiting status...</p>
+                    <p class="muted" style="margin-top:8px;">If the consent window does not open, temporarily disable popup blockers for this page.</p>
+                </section>
+            </div>
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -322,10 +448,7 @@
 
         const params = new URLSearchParams(window.location.search);
         let pendingCode = params.get('code');
-        let pendingState = params.get('state');
         let currentSession = null;
-
-        document.getElementById('year').textContent = new Date().getFullYear();
 
         function showMessage(el, text, type = 'info') {
             if (!el) return;
@@ -350,7 +473,7 @@
                 ui.linkCard.classList.add('hidden');
                 ui.nextStepsCard.classList.add('hidden');
                 ui.signOutBtn.classList.add('hidden');
-                ui.activeUser.textContent = '—';
+                ui.activeUser.textContent = '\u2014';
             }
         }
 
@@ -399,7 +522,8 @@
                 console.error('Status error:', err);
                 ui.statusChip.textContent = 'Error';
                 ui.statusChip.className = 'status-chip danger';
-                ui.statusDetails.textContent = 'Unable to verify Google status. Try refreshing.';
+                ui.statusDetails.textContent = err.message || 'Unable to verify Google status.';
+                showMessage(ui.alertBanner, err.message || 'Unable to fetch Google status.', 'error');
                 return false;
             }
         }
@@ -414,15 +538,16 @@
                 const password = event.target.password.value.trim();
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) throw error;
-                await syncSession();
-                showMessage(ui.loginMessage, 'Authenticated successfully. Proceed below.', 'success');
+                currentSession = data.session;
+                toggleLoggedInUI(true, email);
+                showMessage(ui.loginMessage, 'Authenticated. You can proceed to link Google.', 'success');
                 await fetchGoogleStatus();
                 if (pendingCode) {
                     await exchangeCode(pendingCode);
                 }
             } catch (err) {
                 console.error('Login failed:', err);
-                showMessage(ui.loginMessage, err?.message || 'Authentication failed', 'error');
+                showMessage(ui.loginMessage, err?.message || 'Authentication failed. Check your credentials.', 'error');
             } finally {
                 ui.loginBtn.disabled = false;
                 ui.loginBtn.textContent = 'Sign in & continue';
@@ -457,7 +582,7 @@
                 console.error('OAuth start failed:', err);
                 showMessage(ui.linkMessage, err?.message || 'Unable to open Google authorization.', 'error');
                 ui.launchOAuthBtn.disabled = false;
-                ui.launchOAuthBtn.textContent = 'Launch Google Authorization';
+                ui.launchOAuthBtn.textContent = 'Launch Google authorization';
             }
         }
 
@@ -491,9 +616,8 @@
                 showMessage(ui.linkMessage, err?.message || 'Unable to finish linking.', 'error');
             } finally {
                 pendingCode = null;
-                pendingState = null;
                 ui.launchOAuthBtn.disabled = false;
-                ui.launchOAuthBtn.textContent = 'Launch Google Authorization';
+                ui.launchOAuthBtn.textContent = 'Launch Google authorization';
                 removeQueryParams();
             }
         }

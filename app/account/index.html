@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../../assets/favicon.png" />
+    <title>Sessionify · Account Center</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top left, #4c1d95 0%, #111827 45%, #0f172a 100%);
+            color: #f1f5f9;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            padding: 32px;
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                padding: 16px;
+            }
+        }
+
+        .shell {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(15, 23, 42, 0.72);
+            border-radius: 28px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            overflow: hidden;
+            box-shadow: 0 35px 120px rgba(15, 23, 42, 0.45);
+        }
+
+        @media (max-width: 900px) {
+            .shell {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            background: linear-gradient(165deg, rgba(99, 102, 241, 0.4) 0%, rgba(76, 29, 149, 0.9) 100%);
+            padding: 40px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .sidebar h1 {
+            font-size: 32px;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .sidebar p {
+            color: rgba(241, 245, 249, 0.85);
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .sidebar .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            width: fit-content;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .content {
+                padding: 24px;
+            }
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .user-chip span {
+            font-size: 14px;
+            color: #cbd5f5;
+        }
+
+        button,
+        .btn-link {
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+            font-family: inherit;
+        }
+
+        button.primary {
+            background: linear-gradient(120deg, #818cf8, #a78bfa);
+            color: #0f172a;
+        }
+
+        button.secondary,
+        .btn-link.secondary {
+            background: rgba(148, 163, 184, 0.08);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        button.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fecaca;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        button:not(:disabled):hover,
+        .btn-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 25px rgba(15, 23, 42, 0.25);
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        @media (min-width: 900px) {
+            .grid.two {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        .card p {
+            margin: 0 0 12px;
+            color: #cbd5f5;
+            font-size: 14px;
+        }
+
+        .integration-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .integration-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            padding: 14px 0;
+            border-top: 1px solid rgba(148, 163, 184, 0.15);
+        }
+
+        .integration-row:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .integration-meta strong {
+            font-size: 16px;
+        }
+
+        .integration-meta span {
+            display: block;
+            font-size: 13px;
+            color: rgba(226, 232, 240, 0.7);
+        }
+
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 13px;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        .status-chip.connected {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: rgba(34, 197, 94, 0.4);
+            color: #bbf7d0;
+        }
+
+        .status-chip.pending {
+            background: rgba(234, 179, 8, 0.15);
+            border-color: rgba(234, 179, 8, 0.4);
+            color: #fde68a;
+        }
+
+        .status-chip.disconnected {
+            background: rgba(248, 113, 113, 0.12);
+            border-color: rgba(248, 113, 113, 0.4);
+            color: #fecaca;
+        }
+
+        .plan-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.15);
+            color: #e0e7ff;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: #34d399;
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+        }
+
+        .status.expired .status-dot {
+            background: #f87171;
+            box-shadow: 0 0 10px rgba(248, 113, 113, 0.6);
+        }
+
+        .muted {
+            color: rgba(226, 232, 240, 0.65);
+            font-size: 13px;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        form input,
+        form select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            background: rgba(15, 23, 42, 0.6);
+            color: #f8fafc;
+            font-size: 15px;
+            transition: border 150ms ease, box-shadow 150ms ease;
+        }
+
+        form input:focus,
+        form select:focus {
+            outline: none;
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+        }
+
+        .message {
+            border-radius: 16px;
+            padding: 14px 18px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.show { display: block; }
+        .message.error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fecaca; }
+        .message.success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #d1fae5; }
+
+        .login-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .hidden { display: none !important; }
+
+        .flex-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            background: rgba(148, 163, 184, 0.15);
+            color: #c7d2fe;
+        }
+
+        .link-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .link-strip a {
+            color: #c4b5fd;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .link-strip a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <span class="pill">Sessionify Portal</span>
+            <h1>Manage your account in one place.</h1>
+            <p>Review plan details, confirm billing, and keep your workspace profile up to date. Changes sync instantly with the Sessionify desktop app.</p>
+            <div>
+                <p class="muted">Need help?</p>
+                <div class="link-strip">
+                    <a href="mailto:lunafoxapp@gmail.com?subject=Account%20Help">lunafoxapp@gmail.com</a>
+                    <a href="https://sessionify.onrender.com/" target="_blank" rel="noreferrer">Visit Website</a>
+                </div>
+            </div>
+        </aside>
+        <main class="content">
+            <div class="message" id="banner"></div>
+            <div id="loginGate" class="card">
+                <h3>Verify your identity</h3>
+                <p>Sign in with the same credentials you use inside Sessionify.</p>
+                <form id="loginForm" class="login-panel">
+                    <div>
+                        <label for="loginEmail">Email address</label>
+                        <input type="email" id="loginEmail" required autocomplete="email" placeholder="founder@studio.com" />
+                    </div>
+                    <div>
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••" />
+                    </div>
+                    <button type="submit" id="loginBtn" class="primary">
+                        <span id="loginBtnText">Continue</span>
+                        <span id="loginSpinner" class="hidden">⏳</span>
+                    </button>
+                </form>
+            </div>
+
+            <section id="accountPanel" class="hidden">
+                <div class="top-bar">
+                    <div class="user-chip">
+                        <strong id="chipName">—</strong>
+                        <span id="chipEmail">—</span>
+                    </div>
+                    <div class="flex-row">
+                        <button class="secondary" id="refreshBtn">Refresh data</button>
+                        <button class="danger" id="logoutBtn">Sign out</button>
+                    </div>
+                </div>
+
+                <div class="grid two">
+                    <div class="card">
+                        <div class="plan-pill" id="planName">Plan —</div>
+                        <h3>Subscription</h3>
+                        <p id="planSummary">Your workspace plan keeps everything running smoothly.</p>
+                        <div class="status" id="planStatus">
+                            <span class="status-dot"></span>
+                            <span id="planStatusText">Status unknown</span>
+                        </div>
+                        <p class="muted">Renews on <span id="planExpiry">—</span> (<span id="planCountdown">—</span> days remaining)</p>
+                        <div class="flex-row" style="margin-top:16px;">
+                            <button class="primary" id="upgradeBtn">Upgrade plan</button>
+                            <button class="secondary" id="manageBillingBtn">Manage billing</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Modules & Access</h3>
+                        <p>See which workspace modules are active on your account.</p>
+                        <div class="flex-row" id="moduleList"></div>
+                        <p class="muted" style="margin-top:18px;">Need additional seats or modules? <a href="mailto:sales@sessionify.app?subject=Sessionify%20Modules" style="color:#c4b5fd;">Contact sales</a>.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Integrations</h3>
+                        <p>Launch key integrations without leaving this page.</p>
+                        <div class="integration-list">
+                            <div class="integration-row">
+                                <div class="integration-meta">
+                                    <strong>Google Workspace</strong>
+                                    <span>Sync Meet links, calendar slots, and contacts.</span>
+                                </div>
+                                <div class="status-chip" id="googleStatus">Unknown</div>
+                                <div class="flex-row">
+                                    <button class="primary" id="googleManageBtn">Open Google panel</button>                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Profile settings</h3>
+                        <p>Update the information that appears in the Sessionify desktop app.</p>
+                        <form id="profileForm" class="grid">
+                            <div>
+                                <label for="profileName">Full name</label>
+                                <input type="text" id="profileName" required />
+                            </div>
+                            <div>
+                                <label for="profileCompany">Organisation name</label>
+                                <input type="text" id="profileCompany" placeholder="Studio or practice" />
+                            </div>
+                            <div>
+                                <label for="profileLogo">Logo URL</label>
+                                <input type="url" id="profileLogo" placeholder="https://example.com/logo.png" />
+                            </div>
+                            <button type="submit" id="profileBtn" class="primary">Save changes</button>
+                        </form>
+                    </div>
+                </div>
+
+                
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase;
+        const SUPABASE_URL = 'https://lbkkgwmdauelpkkpruhp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxia2tnd21kYXVlbHBra3BydWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE1MzIyODcsImV4cCI6MjA0NzEwODI4N30.kCLIHf1kvqbwVDvU6SmDRApVQS5sb9vdGzTAOHFVC3Q';
+
+        const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const els = {
+            banner: document.getElementById('banner'),
+            loginGate: document.getElementById('loginGate'),
+            loginForm: document.getElementById('loginForm'),
+            loginBtn: document.getElementById('loginBtn'),
+            loginBtnText: document.getElementById('loginBtnText'),
+            loginSpinner: document.getElementById('loginSpinner'),
+            accountPanel: document.getElementById('accountPanel'),
+            chipName: document.getElementById('chipName'),
+            chipEmail: document.getElementById('chipEmail'),
+            planName: document.getElementById('planName'),
+            planSummary: document.getElementById('planSummary'),
+            planStatus: document.getElementById('planStatus'),
+            planStatusText: document.getElementById('planStatusText'),
+            planExpiry: document.getElementById('planExpiry'),
+            planCountdown: document.getElementById('planCountdown'),
+            moduleList: document.getElementById('moduleList'),
+            profileForm: document.getElementById('profileForm'),
+            profileName: document.getElementById('profileName'),
+            profileCompany: document.getElementById('profileCompany'),
+            profileLogo: document.getElementById('profileLogo'),
+            profileBtn: document.getElementById('profileBtn'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            upgradeBtn: document.getElementById('upgradeBtn'),
+            manageBillingBtn: document.getElementById('manageBillingBtn'),
+            googleStatus: document.getElementById('googleStatus'),
+            zapierStatus: document.getElementById('zapierStatus'),
+            makeStatus: document.getElementById('makeStatus'),
+            googleManageBtn: document.getElementById('googleManageBtn'),
+            googleDocsBtn: document.getElementById('googleDocsBtn'),
+            zapierDocsBtn: document.getElementById('zapierDocsBtn'),
+            makeDocsBtn: document.getElementById('makeDocsBtn')
+        };
+
+        let currentUserId = null;
+
+        const showBanner = (text, type = 'success') => {
+            els.banner.textContent = text;
+            els.banner.className = `message show ${type}`;
+        };
+
+        const clearBanner = () => {
+            els.banner.className = 'message';
+            els.banner.textContent = '';
+        };
+
+        const setLoginLoading = (loading) => {
+            els.loginBtn.disabled = loading;
+            els.loginBtnText.classList.toggle('hidden', loading);
+            els.loginSpinner.classList.toggle('hidden', !loading);
+        };
+
+        const formatDate = (iso) => {
+            if (!iso) return 'Unknown';
+            try {
+                const date = new Date(iso);
+                return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+            } catch (err) {
+                return iso;
+            }
+        };
+
+        const daysUntil = (iso) => {
+            if (!iso) return '—';
+            const target = new Date(iso);
+            const now = new Date();
+            const diff = target - now;
+            return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+        };
+
+        const normalizeModules = (raw) => {
+            if (Array.isArray(raw)) return raw;
+            if (typeof raw === 'string' && raw.trim().length) {
+                const trimmed = raw.trim();
+                if (trimmed.startsWith('[')) {
+                    try {
+                        const parsed = JSON.parse(trimmed);
+                        return Array.isArray(parsed) ? parsed : [];
+                    } catch (err) {
+                        console.warn('Failed to parse modules JSON:', err);
+                    }
+                }
+                return trimmed.split(',').map((val) => val.trim()).filter(Boolean);
+            }
+            return [];
+        };
+
+        const renderModules = (raw) => {
+            els.moduleList.innerHTML = '';
+            const modules = normalizeModules(raw);
+            if (!modules.length) {
+                const span = document.createElement('span');
+                span.className = 'muted';
+                span.textContent = 'No optional modules enabled yet';
+                els.moduleList.appendChild(span);
+                return;
+            }
+            modules.forEach((mod) => {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.textContent = mod.trim();
+                els.moduleList.appendChild(tag);
+            });
+        };
+
+        const setIntegrationStatus = (el, state, label) => {
+            if (!el) return;
+            el.classList.remove('connected', 'pending', 'disconnected');
+            if (state) el.classList.add(state);
+            el.textContent = label;
+        };
+
+        const applyIntegrations = (record = {}) => {
+            const modules = normalizeModules(record.modules);
+            const hasModule = (needle) => modules.some((mod) => mod.toLowerCase().includes(needle));
+
+            const googleConnected = hasModule('google') || Boolean(record.google_connected);
+            setIntegrationStatus(
+                els.googleStatus,
+                googleConnected ? 'connected' : 'disconnected',
+                googleConnected ? 'Connected' : 'Not linked'
+            );
+
+            const zapierEnabled = hasModule('zapier');
+            setIntegrationStatus(
+                els.zapierStatus,
+                zapierEnabled ? 'connected' : 'pending',
+                zapierEnabled ? 'Connected' : 'Join waitlist'
+            );
+
+            const makeEnabled = hasModule('make') || hasModule('integromat');
+            setIntegrationStatus(
+                els.makeStatus,
+                makeEnabled ? 'connected' : 'pending',
+                makeEnabled ? 'Connected' : 'Join waitlist'
+            );
+        };
+
+        const applyProfile = (record = {}) => {
+            const expiry = record.license_expiry;
+            const plan = record.license || 'Unknown';
+            const remaining = daysUntil(expiry);
+            const expired = expiry ? new Date(expiry) < new Date() : false;
+
+            els.chipName.textContent = record.name || 'Workspace owner';
+            els.chipEmail.textContent = record.email || '—';
+            els.planName.textContent = `Plan · ${plan}`;
+            els.planSummary.textContent = record.company ? `${record.company} is running on Sessionify.` : 'Your workspace plan keeps everything running smoothly.';
+            els.planStatus.classList.toggle('expired', expired);
+            els.planStatusText.textContent = expired ? 'Expired — renew to continue' : 'Active and in good standing';
+            els.planExpiry.textContent = expiry ? formatDate(expiry) : 'Not set';
+            els.planCountdown.textContent = expiry ? remaining : '—';
+            renderModules(record.modules);
+            applyIntegrations(record);
+            els.profileName.value = record.name || '';
+            els.profileCompany.value = record.company || '';
+            els.profileLogo.value = record.company_logo || '';
+        };
+
+        const fetchProfile = async () => {
+            if (!currentUserId) return;
+            const { data, error } = await client
+                .from('users')
+                .select('*')
+                .eq('id', currentUserId)
+                .single();
+            if (error) throw error;
+            applyProfile(data);
+            return data;
+        };
+
+        els.loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearBanner();
+            setLoginLoading(true);
+            try {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                const { data: authData, error } = await client.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                currentUserId = authData.user.id;
+                await fetchProfile();
+                els.loginGate.classList.add('hidden');
+                els.accountPanel.classList.remove('hidden');
+                showBanner('Authenticated — your account data is now loaded.', 'success');
+            } catch (err) {
+                console.error(err);
+                showBanner(err.message || 'Authentication failed', 'error');
+            } finally {
+                setLoginLoading(false);
+            }
+        });
+
+        els.profileForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (!currentUserId) return;
+            els.profileBtn.disabled = true;
+            try {
+                const payload = {
+                    name: els.profileName.value.trim() || null,
+                    company: els.profileCompany.value.trim() || null,
+                    company_logo: els.profileLogo.value.trim() || null
+                };
+                const { error } = await client
+                    .from('users')
+                    .update(payload)
+                    .eq('id', currentUserId);
+                if (error) throw error;
+                await fetchProfile();
+                showBanner('Profile updated successfully.', 'success');
+            } catch (err) {
+                console.error(err);
+                showBanner(err.message || 'Failed to update profile', 'error');
+            } finally {
+                els.profileBtn.disabled = false;
+            }
+        });
+
+        els.logoutBtn.addEventListener('click', async () => {
+            await client.auth.signOut();
+            currentUserId = null;
+            els.accountPanel.classList.add('hidden');
+            els.loginGate.classList.remove('hidden');
+            showBanner('Signed out.', 'success');
+        });
+
+        els.refreshBtn.addEventListener('click', async () => {
+            if (!currentUserId) return;
+            try {
+                await fetchProfile();
+                showBanner('Information refreshed.', 'success');
+            } catch (err) {
+                console.error(err);
+                showBanner('Could not refresh details.', 'error');
+            }
+        });
+
+        els.upgradeBtn.addEventListener('click', () => {
+            window.open('https://sessionify.onrender.com/pricing', '_blank', 'noopener');
+        });
+
+        els.manageBillingBtn.addEventListener('click', () => {
+            window.open('mailto:lunafoxapp@gmail.com?subject=Sessionify%20Billing', '_blank');
+        });
+
+        els.googleManageBtn?.addEventListener('click', () => {
+            window.open('https://sessionify.onrender.com/app/google-int/', '_blank', 'noopener');
+        });
+
+        els.googleDocsBtn?.addEventListener('click', () => {
+            window.open('https://sessionify.onrender.com/docs/GOOGLE_MEET_SETUP.html', '_blank', 'noopener');
+        });
+
+        els.zapierDocsBtn?.addEventListener('click', () => {
+            window.open('https://sessionify.app/integrations/zapier', '_blank', 'noopener');
+        });
+
+        els.makeDocsBtn?.addEventListener('click', () => {
+            window.open('https://sessionify.app/integrations/make', '_blank', 'noopener');
+        });
+    </script>
+</body>
+</html>
