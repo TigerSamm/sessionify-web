@@ -1,0 +1,163 @@
+.portal-page {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.portal-page .btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.portal-page .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.portal-page .btn:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 25px rgba(15, 23, 42, 0.25);
+}
+
+.portal-page .btn-primary {
+  background: linear-gradient(120deg, #818cf8, #a78bfa);
+  color: #0f172a;
+}
+
+.portal-page .btn-secondary {
+  background: rgba(148, 163, 184, 0.08);
+  color: #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.portal-page .btn-ghost {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fecaca;
+}
+
+.portal-page .card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.portal-page .message {
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+.portal-page .message.show {
+  display: block;
+}
+
+.portal-page .message.error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fecaca;
+}
+
+.portal-page .message.success {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #d1fae5;
+}
+
+.portal-page .message.info {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #bfdbfe;
+}
+
+.portal-page .shell {
+  width: 100%;
+  max-width: 1200px;
+  background: rgba(15, 23, 42, 0.72);
+  border-radius: 28px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  overflow: hidden;
+  box-shadow: 0 35px 120px rgba(15, 23, 42, 0.45);
+}
+
+@media (max-width: 900px) {
+  .portal-page .shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.portal-page .sidebar {
+  background: linear-gradient(165deg, rgba(99, 102, 241, 0.4) 0%, rgba(76, 29, 149, 0.9) 100%);
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: #fff;
+}
+
+.portal-page .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: fit-content;
+}
+
+.portal-page .status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+}
+
+.portal-page .status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.portal-page input,
+.portal-page select,
+.portal-page textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.6);
+  color: #f8fafc;
+  font-size: 15px;
+  transition: border 150ms ease, box-shadow 150ms ease;
+  font-family: inherit;
+}
+
+.portal-page input:focus,
+.portal-page select:focus,
+.portal-page textarea:focus {
+  outline: none;
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+}
