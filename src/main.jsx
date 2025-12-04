@@ -6,7 +6,8 @@ import './styles/global.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
+    {/* Use Vite's BASE_URL as the router basename so the app can be served under /app/ */}
+    <BrowserRouter basename={(import.meta.env.BASE_URL || '/').replace(/\/$/, '')}>
       <App />
     </BrowserRouter>
   </React.StrictMode>
