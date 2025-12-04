@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+  # Enable rewrite engine
+  RewriteEngine On
+
+  # If the request is for an existing file or directory, serve it directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Rewrite only /app and its subpaths to index.html so the SPA can handle routing
+  RewriteRule ^app(/.*)?$ /index.html [L,QSA]
+</IfModule>
+
+# Prevent directory listings
+Options -Indexes
